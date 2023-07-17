@@ -9,7 +9,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-public class Window implements WindowListener, ComponentListener {
+public class Window extends Canvas implements WindowListener, ComponentListener {
 
     private final JFrame frame;
 
@@ -20,7 +20,6 @@ public class Window implements WindowListener, ComponentListener {
         this.canvas = new WindowCanvas();
 
         this.frame.add(canvas);
-        this.frame.pack();
 
         this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.frame.setLocationRelativeTo(null);
@@ -30,6 +29,7 @@ public class Window implements WindowListener, ComponentListener {
         this.frame.addComponentListener(this);
 
         this.frame.setVisible(true);
+        this.frame.pack();
     }
 
     public void setTitle(String title) {
@@ -77,12 +77,12 @@ public class Window implements WindowListener, ComponentListener {
         MSCraft.getInstance().getRenderer().setWidth((int) this.getWidth());
     }
 
-    public double getHeight() {
-        return this.getSize().getHeight();
+    public int getHeight() {
+        return (int) this.getSize().getHeight();
     }
 
-    public double getWidth() {
-        return this.getSize().getWidth();
+    public int getWidth() {
+        return (int) this.getSize().getWidth();
     }
 
     public Dimension getSize() {

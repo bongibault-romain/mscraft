@@ -6,7 +6,10 @@ import net.mscraft.game.Window;
 import net.mscraft.graphics.Renderer;
 import net.mscraft.graphics.Screen;
 
+import java.awt.*;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 public class MSCraft implements Runnable {
 
@@ -14,12 +17,13 @@ public class MSCraft implements Runnable {
     private static final MSCraft instance = new MSCraft();
 
     @Getter
-    private final Renderer renderer;
+    private Renderer renderer;
 
-    private final Screen screen;
+    private Screen screen;
     @Getter
-    private final Window window;
+    private Window window;
     private BufferedImage img;
+    private int[] pixels;
     @Getter
     @Setter
     private boolean running = false;
@@ -27,20 +31,30 @@ public class MSCraft implements Runnable {
     private Thread gameThread;
 
     public MSCraft() {
-        this.window = new Window("MSCraft");
+
+    }
+
+    public static void main(String[] args) {
+        instance.init();
+        instance.start();
+    }
+
+    private void init(){
+        renderer = new Renderer(800, 600);
+        window = new Window("MSCraft");
+        int width = (int) window.getWidth();
+        int height = (int) window.getHeight();
 
         /**
          * -------------------------
          * Tests de rendu des pixels
          */
-        this.screen = new Screen((int) this.window.getWidth(), (int) this.window.getHeight());
+        screen = new Screen(width, height);
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+
         // ---------------
 
-        this.renderer = new Renderer((int) this.window.getWidth(), (int) this.window.getHeight());
-    }
-
-    public static void main(String[] args) {
-        instance.start();
     }
 
     /**
@@ -74,7 +88,22 @@ public class MSCraft implements Runnable {
     }
 
     private void render() {
+        BufferStrategy bs = this.getWindow().getBufferStrategy();
+        if(bs == null) {
+            this.getWindow().createBufferStrategy(3);
+            return;
+        }
 
+        screen.render();
+
+        for (int i = 0; i < this.getWindow().getWidth()*this.getWindow().getHeight(); i++) {
+            pixels[i] = screen.getPixels()[i];
+        }
+
+        Graphics graphics = bs.getDrawGraphics();
+        graphics.drawImage(img, 0, 0, this.getWindow().getWidth(), this.getWindow().getHeight(), null);
+        graphics.dispose();
+        bs.show();
     }
 
     public void stop() {

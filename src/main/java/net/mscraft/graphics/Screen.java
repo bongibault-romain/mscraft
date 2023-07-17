@@ -15,7 +15,7 @@ public class Screen extends Renderer {
          */
         testRenderer = new Renderer(width, height);
         Random random = new Random();
-        for (int i = 0; i < width * height; i++) {
+        for (int i = 0; i < 256 * 256; i++) {
             testRenderer.getPixels()[i] = random.nextInt();
         }
     }
